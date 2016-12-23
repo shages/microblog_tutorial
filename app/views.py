@@ -1,3 +1,5 @@
+"""Views for Flask microblog app."""
+
 from flask import render_template, flash, redirect
 from app import app
 from .forms import LoginForm
@@ -5,6 +7,7 @@ from .forms import LoginForm
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    """Login view."""
     form = LoginForm()
     if form.validate_on_submit():
         flash('Login requested for OpenID="{oid}", remember_me={rem}'.format(
@@ -21,6 +24,7 @@ def login():
 @app.route('/')
 @app.route('/index')
 def hello():
+    """Site index."""
     user = {'nickname': 'Charlie'}
     posts = [  # fake array of posts
         {
