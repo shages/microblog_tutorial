@@ -13,7 +13,8 @@ def login():
         return redirect('/index')
     return render_template('login.html',
                            title='Log in silly!',
-                           form=form)
+                           form=form,
+                           providers=app.config['OPENID_PROVIDERS'])
 
 @app.route('/')
 @app.route('/index')
