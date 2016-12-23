@@ -1,5 +1,6 @@
 from app import db
 
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nickname = db.Column(db.String(64), index=True, unique=True)
@@ -8,6 +9,7 @@ class User(db.Model):
 
     def __repr__(self):
         return '<User {0!r}>'.format(self.nickname)
+
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
