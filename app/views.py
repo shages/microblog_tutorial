@@ -10,6 +10,7 @@ from .models import User
 
 @app.before_request
 def before_request():
+    """Keep the current user up-to-date by using flask_login."""
     g.user = flask_login.current_user
 
 
@@ -50,6 +51,7 @@ def after_login(resp):
 
 @app.route('/logout')
 def logout():
+    """Log the user out, then redirect back to the homepage."""
     flask_login.logout_user()
     return redirect(url_for('index'))
 
