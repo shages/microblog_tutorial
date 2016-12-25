@@ -8,6 +8,12 @@ from .forms import LoginForm
 from .models import User
 
 
+#    _
+#   //  _,_ __   .  ,__,
+# _(/__(_/_(_/__/__/ / (_
+#          _/_
+#         (/
+
 @app.before_request
 def before_request():
     """Keep the current user up-to-date by using flask_login."""
@@ -71,6 +77,33 @@ def login():
                            form=form,
                            providers=app.config['OPENID_PROVIDERS'])
 
+
+#                          _
+#   ,_    ,_   _,_ /)  .  //  _
+#  _/_)__/ (__(_/_//__/__(/__(/_
+#  /            _/
+# /             /)
+#               `
+
+@app.route('/u/<name>')
+@flask_login.login_required
+def user(name):
+    user = User.query.filter_by(nickname=name).first()
+    if user is None:
+        flash('User {0} not found'.format(name))
+        return redirect(url_for('index'))
+    posts = [
+        {'author': user, 'body': 'Test post 1'},
+        {'author': user, 'body': 'Test post 2'}
+    ]
+    return render_template('user.html',
+                           user=user,
+                           posts=posts)
+
+
+#                      _  ,_
+#   .  ,__,   __/   __/ )/
+# _/__/ / (__(_/(__(/__/(_
 
 @app.route('/')
 @app.route('/index')
