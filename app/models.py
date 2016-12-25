@@ -1,5 +1,6 @@
 """Database models."""
 
+import hashlib
 from app import db
 
 
@@ -10,6 +11,12 @@ class User(db.Model):
     nickname = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     posts = db.relationship('Post', backref='author', lazy='dynamic')
+
+    def avatar(self, size):
+        return 'http://www.gravatar.com/avatar/{md5}?d=mm&s={size}'.format(
+            size=size,
+            md5=hashlib.md5(self.email.encode('utf-8')).hexdigest()
+        )
 
     @property
     def is_authenticated(self):
