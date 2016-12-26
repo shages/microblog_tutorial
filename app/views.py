@@ -3,6 +3,7 @@
 from flask import render_template, flash, redirect, \
     session, url_for, request, g
 import flask_login
+import datetime
 from app import app, db, lm, oid
 from .forms import LoginForm
 from .models import User
@@ -18,6 +19,10 @@ from .models import User
 def before_request():
     """Keep the current user up-to-date by using flask_login."""
     g.user = flask_login.current_user
+    if g.user.is_authenticated:
+        g.user.last_seen = datetime.datetime.utcnow()
+        db.session.add(g.user)
+        db.session.commit()
 
 
 @lm.user_loader
