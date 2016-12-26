@@ -15,6 +15,7 @@ class User(db.Model):
     last_seen = db.Column(db.DateTime)
 
     def avatar(self, size):
+        """Get avatar from Gravatar service."""
         return 'http://www.gravatar.com/avatar/{md5}?d=mm&s={size}'.format(
             size=size,
             md5=hashlib.md5(self.email.encode('utf-8')).hexdigest()

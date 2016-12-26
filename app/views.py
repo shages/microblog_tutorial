@@ -8,6 +8,23 @@ from app import app, db, lm, oid
 from .forms import LoginForm, EditForm
 from .models import User
 
+#                                                     _
+#   _   ,_   ,_   _,_ ,_      /_  __,   ,__,   __/   //  _   ,_   ,
+# _(/__/ (__/ (__(_/_/ (_   _/ (_(_/(__/ / (__(_/(__(/__(/__/ (__/_)_
+
+
+@app.errorhandler(404)
+def not_found_error(error):
+    """Custom 404 page."""
+    return render_template('404.html'), 404
+
+
+@app.errorhandler(500)
+def internal_error(error):
+    """Custom 500 page."""
+    db.session.rollback()
+    return render_template('500.html'), 500
+
 
 #    _
 #   //  _,_ __   .  ,__,
@@ -93,6 +110,7 @@ def login():
 @app.route('/u/<name>')
 @flask_login.login_required
 def user(name):
+    """Profile page."""
     user = User.query.filter_by(nickname=name).first()
     if user is None:
         flash('User {0} not found'.format(name))
@@ -109,6 +127,7 @@ def user(name):
 @app.route('/edit', methods=['GET', 'POST'])
 @flask_login.login_required
 def edit():
+    """Edit Profile page."""
     form = EditForm()
     if form.validate_on_submit():
         g.user.nickname = form.nickname.data
