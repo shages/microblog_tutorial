@@ -34,6 +34,8 @@ if not app.debug:
     mail_handler.setLevel(logging.ERROR)
     app.logger.addHandler(mail_handler)
     # Files
+    if not os.path.exists('tmp'):
+        os.makedirs('tmp')
     file_handler = RotatingFileHandler('tmp/microblog.log',
                                        'a', 1 * 1024 * 1024, 10)
     file_handler.setFormatter(logging.Formatter(
