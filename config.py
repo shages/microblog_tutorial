@@ -1,5 +1,14 @@
 import os
 
+# mail
+MAIL_SERVER = 'localhost'
+MAIL_PORT = 2525
+MAIL_USERNAME = None
+MAIL_PASSWORD = None
+
+# admin
+ADMINS = ['admin@flaskmicroblog.net']
+
 WTF_CSRF_ENABLED = True
 SECRET_KEY = 'what-is-this'
 
