@@ -7,7 +7,10 @@ python:
 install: 
     - "pip install -r requirements.txt"
     - "pip install -r dev-requirements.txt"
+    - "pip install coveralls"
 script: 
-- ./tests/flake.sh
-- pytest ./tests/units.py
+    - ./tests/flake.sh
+    - coverage run --source=app -m pytest
+after_success:
+    coveralls
 
