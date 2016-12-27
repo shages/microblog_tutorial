@@ -20,10 +20,15 @@ class EditForm(FlaskForm):
     about_me = TextAreaField('about_me', validators=[Length(min=0, max=140)])
 
     def __init__(self, original_nickname, *args, **kwargs):
+        """Initialize EditForm."""
         FlaskForm.__init__(self, *args, **kwargs)
         self.original_nickname = original_nickname
 
     def validate(self):
+        """Check if username is a duplicate.
+
+        If it is, bounce back to the edit form.
+        """
         if not FlaskForm.validate(self):
             return False
         if self.nickname.data == self.original_nickname:
