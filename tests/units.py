@@ -14,6 +14,14 @@ from app import app, db
 from app.models import User
 
 
+#           _  ,_
+#    /)  ._/ )/ -/-      ,_   _   ,
+#  _//__/_ _/(__/__(_/__/ (__(/__/_)_
+# _/
+# /)
+# `
+
+
 @pytest.fixture
 def setup():
     """Setup test fixture.
