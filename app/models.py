@@ -14,6 +14,26 @@ class User(db.Model):
     about_me = db.Column(db.String(140), unique=False)
     last_seen = db.Column(db.DateTime)
 
+    @staticmethod
+    def make_unique_nickname(nickname):
+        """Convert requested nickname into a uniquified one.
+
+        Uses version counter to uniquify. For example:
+
+        make_unique_nickname('Charles') -> 'Charles'
+        make_unique_nickname('Charles') -> 'Charles2'
+        make_unique_nickname('Charles') -> 'Charles3'
+        """
+        if User.query.filter_by(nickname=nickname).first() is None:
+            return nickname
+        version = 2
+        while True:
+            new_nickname = '{nn}.{ver}'.format(nn=nickname, ver=version)
+            if User.query.filter_by(nickname=new_nickname).first() is None:
+                break
+            version += 1
+        return new_nickname
+
     def avatar(self, size):
         """Get avatar from Gravatar service."""
         return 'http://www.gravatar.com/avatar/{md5}?d=mm&s={size}'.format(

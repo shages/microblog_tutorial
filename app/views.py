@@ -65,6 +65,8 @@ def after_login(resp):
         nn = resp.nickname
         if nn is None or nn == '':
             nn = resp.email.split('@')[0]
+        # Uniquify
+        nn = User.make_unique_nickname(nn)
         # Create new user
         user = User(nickname=nn, email=resp.email)
         db.session.add(user)
@@ -128,7 +130,7 @@ def user(name):
 @flask_login.login_required
 def edit():
     """Edit Profile page."""
-    form = EditForm()
+    form = EditForm(g.user.nickname)
     if form.validate_on_submit():
         g.user.nickname = form.nickname.data
         g.user.about_me = form.about_me.data
