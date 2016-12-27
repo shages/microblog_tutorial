@@ -1,3 +1,6 @@
 __pycache__
 .idea
 venv
+app.db
+db_repository
+tmp
