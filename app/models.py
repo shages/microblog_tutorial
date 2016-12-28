@@ -4,6 +4,13 @@ import hashlib
 from app import db
 
 
+followers = db.Table('followers',
+                     db.Column('follower_id', db.Integer,
+                               db.ForeignKey('user.id')),
+                     db.Column('followed_id', db.Integer,
+                               db.ForeignKey('user.id')))
+
+
 class User(db.Model):
     """User object."""
 
@@ -13,6 +20,29 @@ class User(db.Model):
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     about_me = db.Column(db.String(140), unique=False)
     last_seen = db.Column(db.DateTime)
+    followed = db.relationship('User',
+                               secondary=followers,
+                               primaryjoin=(followers.c.follower_id == id),
+                               secondaryjoin=(followers.c.followed_id == id),
+                               backref=db.backref('followers', lazy='dynamic'),
+                               lazy='dynamic')
+
+    def follow(self, other_user):
+        """Follow another user."""
+        if not self.is_following(other_user):
+            self.followed.append(other_user)
+            return self
+
+    def unfollow(self, other_user):
+        """Unfollow another user."""
+        if self.is_following(other_user):
+            self.followed.remove(other_user)
+            return self
+
+    def is_following(self, other_user):
+        """Check if I am following the specified user."""
+        return self.followed.filter(followers.c.followed_id ==
+                                    other_user.id).count() > 0
 
     @staticmethod
     def make_unique_nickname(nickname):
@@ -28,7 +58,7 @@ class User(db.Model):
             return nickname
         version = 2
         while True:
-            new_nickname = '{nn}.{ver}'.format(nn=nickname, ver=version)
+            new_nickname = '{nn}{ver}'.format(nn=nickname, ver=version)
             if User.query.filter_by(nickname=new_nickname).first() is None:
                 break
             version += 1
