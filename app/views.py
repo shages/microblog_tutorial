@@ -4,6 +4,7 @@ from flask import render_template, flash, redirect, \
     session, url_for, request, g
 import flask_login
 import datetime
+from config import POSTS_PER_PAGE
 from app import app, db, lm, oid
 from .forms import LoginForm, EditForm, PostForm
 from .models import User, Post
@@ -112,17 +113,15 @@ def login():
 #               `
 
 @app.route('/u/<name>')
+@app.route('/u/<name>/<int:page>')
 @flask_login.login_required
-def user(name):
+def user(name, page=1):
     """Profile page."""
     user = User.query.filter_by(nickname=name).first()
     if user is None:
         flash('User {0} not found'.format(name))
         return redirect(url_for('index'))
-    posts = [
-        {'author': user, 'body': 'Test post 1'},
-        {'author': user, 'body': 'Test post 2'}
-    ]
+    posts = user.posts.paginate(page, POSTS_PER_PAGE, False)
     return render_template('user.html',
                            user=user,
                            posts=posts)
@@ -196,8 +195,9 @@ def unfollow(nickname):
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
+@app.route('/index/<int:page>', methods=['GET', 'POST'])
 @flask_login.login_required
-def index():
+def index(page=1):
     """Site index."""
     form = PostForm()
     if form.validate_on_submit():
@@ -208,7 +208,7 @@ def index():
         db.session.commit()
         flash('Your post is now live')
         return redirect(url_for('index'))
-    posts = g.user.followed_posts().all()
+    posts = g.user.followed_posts().paginate(page, POSTS_PER_PAGE, False)
     return render_template('index.html',
                            title="Yo yo yo",
                            form=form,

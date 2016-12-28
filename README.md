@@ -6,6 +6,13 @@ Following the [Flask Mega-Tutorial](https://blog.miguelgrinberg.com/post/the-fla
 
 
 ## Initialization
+Install dependencies
+```sh
+pip install -r requirements.txt
+# [Optional] if you are running tests
+pip install -r dev-requirements.txt
+```
+
 Initialize the database
 ```sh
 ./db_util/db_create.py
