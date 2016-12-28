@@ -89,6 +89,9 @@ def test_make_unique_nickname(setup):
     assert nickname2 != 'john'
     assert nickname2 != nickname
 
+    # Create fresh nickname and assure there's no issue
+    assert User.make_unique_nickname('terry') == 'terry'
+
 
 @td
 def test_follow(setup):
