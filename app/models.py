@@ -44,6 +44,13 @@ class User(db.Model):
         return self.followed.filter(followers.c.followed_id ==
                                     other_user.id).count() > 0
 
+    def followed_posts(self):
+        """Return posts of followed users, sorted by date."""
+        return Post.query.join(followers,
+                               (followers.c.followed_id == Post.user_id)) \
+            .filter(followers.c.follower_id == self.id) \
+            .order_by(Post.timestamp.desc())
+
     @staticmethod
     def make_unique_nickname(nickname):
         """Convert requested nickname into a uniquified one.
