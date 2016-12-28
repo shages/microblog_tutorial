@@ -5,8 +5,8 @@ from flask import render_template, flash, redirect, \
 import flask_login
 import datetime
 from app import app, db, lm, oid
-from .forms import LoginForm, EditForm
-from .models import User
+from .forms import LoginForm, EditForm, PostForm
+from .models import User, Post
 
 #                                                     _
 #   _   ,_   ,_   _,_ ,_      /_  __,   ,__,   __/   //  _   ,_   ,
@@ -194,21 +194,22 @@ def unfollow(nickname):
 # _/__/ / (__(_/(__(/__/(_
 
 
-@app.route('/')
-@app.route('/index')
+@app.route('/', methods=['GET', 'POST'])
+@app.route('/index', methods=['GET', 'POST'])
 @flask_login.login_required
 def index():
     """Site index."""
-    user = flask_login.current_user
-    posts = [  # fake array of posts
-        {
-            'author': {'nickname': 'John'},
-            'body': 'Beautiful day in Portland!'
-        },
-        {
-            'author': {'nickname': 'Susan'},
-            'body': 'The Avengers movie was so cool!'
-        }
-    ]
-    return render_template('index.html', user=user, title="Yo yo yo",
+    form = PostForm()
+    if form.validate_on_submit():
+        post = Post(body=form.post.data,
+                    timestamp=datetime.datetime.utcnow(),
+                    author=g.user)
+        db.session.add(post)
+        db.session.commit()
+        flash('Your post is now live')
+        return redirect(url_for('index'))
+    posts = g.user.followed_posts().all()
+    return render_template('index.html',
+                           title="Yo yo yo",
+                           form=form,
                            posts=posts)

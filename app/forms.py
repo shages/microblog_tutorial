@@ -39,3 +39,9 @@ class EditForm(FlaskForm):
                 Please choose another one')
             return False
         return True
+
+
+class PostForm(FlaskForm):
+    """Blog post form."""
+
+    post = StringField('post', validators=[DataRequired()])
