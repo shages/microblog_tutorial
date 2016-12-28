@@ -11,7 +11,15 @@
             {% if user.last_seen %}
             <p><i>Last seen @ {{ user.last_seen }}</i></p>
             {% endif %}
-            {% if user.id == g.user.id %}<p><a href="{{ url_for('edit') }}">Edit Profile</a></p>{% endif %}
+            <p>{{ user.followers.count() }} followers |
+            {% if user.id == g.user.id %}
+                <a href="{{ url_for('edit') }}">Edit Profile</a>
+            {% elif g.user.is_following(user) %}
+                <a href="{{ url_for('unfollow', nickname=user.nickname) }}">Unfollow</a>
+            {% else %}
+                <a href="{{ url_for('follow', nickname=user.nickname) }}">Follow</a>
+            {% endif %}
+            </p>
         </td>
     </tr>
 </table>

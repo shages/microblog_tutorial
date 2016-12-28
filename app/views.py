@@ -71,6 +71,8 @@ def after_login(resp):
         user = User(nickname=nn, email=resp.email)
         db.session.add(user)
         db.session.commit()
+        db.session.add(user.follow(user))  # make the user follow him/herself
+        db.session.commit()
     remember_me = False
     if 'remember_me' in session:
         remember_me = session['remember_me']
@@ -145,9 +147,52 @@ def edit():
                            form=form)
 
 
+@app.route('/follow/<nickname>')
+def follow(nickname):
+    """Follow a user with the specified nickname."""
+    user = User.query.filter_by(nickname=nickname).first()
+    if user is None:
+        flash('User {0} wasn\'t found'.format(nickname))
+        return redirect(url_for('index'))
+    if g.user.is_following(user):
+        # already following
+        flash('User {0} is already being followed'.format(nickname))
+        return redirect(url_for('index'))
+    # follow the user
+    u = g.user.follow(user)
+    if u is None:
+        flash('Can\'t follow user {0}'.format(nickname))
+        return redirect(url_for('index'))
+    db.session.add(u)
+    db.session.commit()
+    flash('You are now following user {0}'.format(nickname))
+    return redirect(url_for('user', name=nickname))
+
+
+@app.route('/unfollow/<nickname>')
+def unfollow(nickname):
+    """Unfollow a user with the specified nickname."""
+    user = User.query.filter_by(nickname=nickname).first()
+    if user is None:
+        flash('User {0} not found.'.format(nickname))
+        return redirect(url_for('index'))
+    if user == g.user:
+        flash('You can\'t unfollow yourself!')
+        return redirect(url_for('user', nickname=nickname))
+    u = g.user.unfollow(user)
+    if u is None:
+        flash('Cannot unfollow {0}'.format(nickname))
+        return redirect(url_for('user', nickname=nickname))
+    db.session.add(u)
+    db.session.commit()
+    flash('You have stopped following {0}'.format(nickname))
+    return redirect(url_for('user', name=nickname))
+
+
 #                      _  ,_
 #   .  ,__,   __/   __/ )/
 # _/__/ / (__(_/(__(/__/(_
+
 
 @app.route('/')
 @app.route('/index')
