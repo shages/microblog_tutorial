@@ -22,7 +22,7 @@ OPENID_PROVIDERS = [
 basedir = os.path.abspath(os.path.dirname(__file__))
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
 SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
-SQLALCHEMY_TRACK_MODIFICATIONS = False
+SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 # /index pagination
 POSTS_PER_PAGE = 3
