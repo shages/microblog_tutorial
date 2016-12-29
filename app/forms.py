@@ -45,3 +45,9 @@ class PostForm(FlaskForm):
     """Blog post form."""
 
     post = StringField('post', validators=[DataRequired()])
+
+
+class SearchForm(FlaskForm):
+    """Search box in top nav bar."""
+
+    search = StringField('search', validators=[DataRequired()])

@@ -1,7 +1,9 @@
 """Database models."""
 
+import sys
 import hashlib
-from app import db
+import flask_whooshalchemyplus
+from app import app, db
 
 
 followers = db.Table('followers',
@@ -108,6 +110,8 @@ class User(db.Model):
 class Post(db.Model):
     """User post object."""
 
+    __searchable__ = ['body']
+
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.String(200))
     timestamp = db.Column(db.DateTime)
@@ -116,3 +120,7 @@ class Post(db.Model):
     def __repr__(self):
         """Representation of post."""
         return '<Post {0!r}>'.format(self.body)
+
+
+# Initialize search
+flask_whooshalchemyplus.init_app(app)

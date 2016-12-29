@@ -4,9 +4,9 @@ from flask import render_template, flash, redirect, \
     session, url_for, request, g
 import flask_login
 import datetime
-from config import POSTS_PER_PAGE
+from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS
 from app import app, db, lm, oid
-from .forms import LoginForm, EditForm, PostForm
+from .forms import LoginForm, EditForm, PostForm, SearchForm
 from .models import User, Post
 
 #                                                     _
@@ -41,6 +41,7 @@ def before_request():
         g.user.last_seen = datetime.datetime.utcnow()
         db.session.add(g.user)
         db.session.commit()
+        g.search_form = SearchForm()
 
 
 @lm.user_loader
@@ -103,6 +104,28 @@ def login():
                            title='Log in silly!',
                            form=form,
                            providers=app.config['OPENID_PROVIDERS'])
+
+
+#   ,    _  __,   ,_   __   /_
+# _/_)__(/_(_/(__/ (__(_,__/ (_
+
+
+@app.route('/search', methods=['POST'])
+@flask_login.login_required
+def search():
+    if g.search_form.validate_on_submit():
+        return redirect(url_for('search_results',
+                                query=g.search_form.search.data))
+    return redirect(url_for('index'))
+
+
+@app.route('/search/<query>')
+@flask_login.login_required
+def search_results(query):
+    results = Post.query.whoosh_search(query, MAX_SEARCH_RESULTS).all()
+    return render_template('search_results.html',
+                           query=query,
+                           results=results)
 
 
 #                          _
