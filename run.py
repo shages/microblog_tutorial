@@ -2,4 +2,4 @@
 """Startup the server"""
 
 from app import app
-app.run(debug=True)
+app.run(debug=False)
