@@ -8,6 +8,7 @@ from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS
 from app import app, db, lm, oid
 from .forms import LoginForm, EditForm, PostForm, SearchForm
 from .models import User, Post
+from .emails import follower_notification
 
 #                                                     _
 #   _   ,_   ,_   _,_ ,_      /_  __,   ,__,   __/   //  _   ,_   ,
@@ -170,6 +171,7 @@ def edit():
 
 
 @app.route('/follow/<nickname>')
+@flask_login.login_required
 def follow(nickname):
     """Follow a user with the specified nickname."""
     user = User.query.filter_by(nickname=nickname).first()
@@ -188,6 +190,7 @@ def follow(nickname):
     db.session.add(u)
     db.session.commit()
     flash('You are now following user {0}'.format(nickname))
+    follower_notification(user, g.user)
     return redirect(url_for('user', name=nickname))
 
 
