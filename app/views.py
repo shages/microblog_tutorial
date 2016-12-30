@@ -114,6 +114,7 @@ def login():
 @app.route('/search', methods=['POST'])
 @flask_login.login_required
 def search():
+    """Submit a search query to the search_results view."""
     if g.search_form.validate_on_submit():
         return redirect(url_for('search_results',
                                 query=g.search_form.search.data))
@@ -123,6 +124,7 @@ def search():
 @app.route('/search/<query>')
 @flask_login.login_required
 def search_results(query):
+    """Perform a search using the Whoosh search engine."""
     results = Post.query.whoosh_search(query, MAX_SEARCH_RESULTS).all()
     return render_template('search_results.html',
                            query=query,
