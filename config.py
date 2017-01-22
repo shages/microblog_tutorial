@@ -25,7 +25,7 @@ SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 # /index pagination
-POSTS_PER_PAGE = 3
+POSTS_PER_PAGE = 20
 
 # search config
 WHOOSH_BASE = os.path.join(basedir, 'search.db')
