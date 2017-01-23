@@ -1,7 +1,9 @@
 <table>
     <tr>
         <td><a href="/u/{{ post.author.nickname }}"><img src="{{ post.author.avatar(50) }}" /></a></td>
-        <td><p><a href="/u/{{ post.author.nickname }}"><b>{{ post.author.nickname }}</b></a> said {{ momentjs(post.timestamp).fromNow() }}:</p>
+        <td>{% autoescape false %}
+            <p>{{ _('%(nickname)s said %(when)s:', nickname = '<a href="/u/{0}">{0}</a>'.format(post.author.nickname), when=momentjs(post.timestamp).fromNow()) }}</p>
+            {% endautoescape %}
             <p>{{ post.body }}</p></td>
     </tr>
 </table>

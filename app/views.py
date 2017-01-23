@@ -3,12 +3,25 @@
 from flask import render_template, flash, redirect, \
     session, url_for, request, g
 import flask_login
+import flask_babel
 import datetime
-from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS
-from app import app, db, lm, oid
+from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS, LANGUAGES
+from app import app, db, lm, oid, babel
 from .forms import LoginForm, EditForm, PostForm, SearchForm
 from .models import User, Post
 from .emails import follower_notification
+
+
+#                     _
+#   /_ __,   /_  _   //
+# _/_)(_/(__/_)_(/__(/_
+
+
+@babel.localeselector
+def get_locale():
+    """Return the locale for Babel to use."""
+    return request.accept_languages.best_match(LANGUAGES.keys())
+
 
 #                                                     _
 #   _   ,_   ,_   _,_ ,_      /_  __,   ,__,   __/   //  _   ,_   ,
@@ -43,6 +56,7 @@ def before_request():
         db.session.add(g.user)
         db.session.commit()
         g.search_form = SearchForm()
+    g.locale = get_locale()
 
 
 @lm.user_loader
@@ -61,7 +75,7 @@ def after_login(resp):
     Lastly, redirect the user to their next page or back to the index.
     """
     if resp.email is None or resp.email == '':
-        flash('Invalid login. Try again, sucker!')
+        flash(flask_babel.gettext('Invalid login. Try again, sucker!'))
         return redirect(url_for('login'))
     user = User.query.filter_by(email=resp.email).first()
     if user is None:
@@ -69,6 +83,7 @@ def after_login(resp):
         if nn is None or nn == '':
             nn = resp.email.split('@')[0]
         # Uniquify
+        nn = User.make_valid_nickname(nn)
         nn = User.make_unique_nickname(nn)
         # Create new user
         user = User(nickname=nn, email=resp.email)

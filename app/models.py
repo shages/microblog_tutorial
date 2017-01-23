@@ -1,6 +1,7 @@
 """Database models."""
 
 import sys
+import re
 import hashlib
 import flask_whooshalchemyplus
 from app import app, db
@@ -52,6 +53,14 @@ class User(db.Model):
                                (followers.c.followed_id == Post.user_id)) \
             .filter(followers.c.follower_id == self.id) \
             .order_by(Post.timestamp.desc())
+
+    @staticmethod
+    def make_valid_nickname(nickname):
+        """Convert a user-generated nickname into a valid one.
+
+        Strip out unsafe characters since this is later rendered unescaped.
+        """
+        return re.sub('[^a-zA-Z0-9_\.]', '', nickname)
 
     @staticmethod
     def make_unique_nickname(nickname):
